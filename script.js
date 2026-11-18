@@ -15,26 +15,87 @@ let offsetY = 0;
 let dragging = false;
 let startX, startY;
 
-// Load main frame asset (Asset 6@4x.png, base64 from frame-data.js prevents CORS/tainted canvas errors on file:// protocol)
-const frame = new Image();
+// Active frame index (1: Frame 1, 2: Frame 2, 3: Asset 6@4x)
+let currentFrameId = 1;
 
-// Always attach listeners BEFORE setting src so cached or data: URLs never miss onload
-frame.onload = () => {
-  draw();
+const frames = {
+  1: new Image(),
+  2: new Image(),
+  3: new Image()
 };
 
-frame.onerror = () => {
-  // If frame-2048.png fails, fall back to Asset 6@4x.png
-  if (!frame.src.includes("Asset")) {
-    frame.src = "Asset 6@4x.png";
+const frameSources = {
+  1: {
+    data: (typeof window !== "undefined" && window.FRAMES_DATA && window.FRAMES_DATA[1]),
+    fast: "frame-1-2048.png",
+    orig: "Frame 1_3.png"
+  },
+  2: {
+    data: (typeof window !== "undefined" && window.FRAMES_DATA && window.FRAMES_DATA[2]),
+    fast: "frame-2-2048.png",
+    orig: "Frame 2_1.png"
+  },
+  3: {
+    data: (typeof window !== "undefined" && window.FRAMES_DATA && window.FRAMES_DATA[3]),
+    fast: "frame-3-2048.png",
+    orig: "Asset 6@4x.png"
   }
 };
 
-if (typeof window !== "undefined" && window.FRAME_DATA) {
-  frame.src = window.FRAME_DATA;
-} else {
-  frame.src = "frame-2048.png";
+// Initialize and preload all 3 frames
+for (let id = 1; id <= 3; id++) {
+  const f = frames[id];
+  const src = frameSources[id];
+
+  f.onload = () => {
+    if (currentFrameId === id) {
+      draw();
+    }
+  };
+
+  f.onerror = () => {
+    // If the fast/data source fails, fallback to original file
+    if (!f.src.endsWith(encodeURI(src.orig)) && !f.src.endsWith(src.orig)) {
+      f.src = src.orig;
+    }
+  };
+
+  if (src.data) {
+    f.src = src.data;
+  } else {
+    f.src = src.fast;
+  }
 }
+
+// Inlined thumbnail data for fast/file:// preview rendering
+if (typeof window !== "undefined" && window.FRAME_THUMBS) {
+  for (let id = 1; id <= 3; id++) {
+    const thumbEl = document.getElementById(`thumb-img-${id}`);
+    if (thumbEl && window.FRAME_THUMBS[id]) {
+      thumbEl.src = window.FRAME_THUMBS[id];
+    }
+  }
+}
+
+// Frame switch function
+function setFrame(id) {
+  id = Number(id);
+  if (!frames[id] || currentFrameId === id) return;
+  currentFrameId = id;
+
+  document.querySelectorAll(".frame-choice").forEach(btn => {
+    btn.classList.toggle("active", Number(btn.dataset.frame) === id);
+  });
+
+  draw();
+}
+
+// Bind click events on frame choice buttons
+document.querySelectorAll(".frame-choice").forEach(btn => {
+  btn.addEventListener("click", () => {
+    setFrame(btn.dataset.frame);
+  });
+});
 
 // Mobile detection
 const isMobile = "ontouchstart" in window || navigator.maxTouchPoints > 0;
@@ -101,9 +162,10 @@ function drawPlaceholder() {
 
   ctx.restore();
 
-  // Draw frame overlay if loaded
-  if (frame.complete && frame.naturalWidth !== 0) {
-    ctx.drawImage(frame, 0, 0, SIZE, SIZE);
+  // Draw currently selected frame overlay if loaded
+  const activeFrame = frames[currentFrameId];
+  if (activeFrame && activeFrame.complete && activeFrame.naturalWidth !== 0) {
+    ctx.drawImage(activeFrame, 0, 0, SIZE, SIZE);
   }
 }
 
@@ -140,9 +202,10 @@ function draw() {
 
   ctx.restore();
 
-  // Overlay frame if loaded
-  if (frame.complete && frame.naturalWidth !== 0) {
-    ctx.drawImage(frame, 0, 0, SIZE, SIZE);
+  // Overlay currently selected frame if loaded
+  const activeFrame = frames[currentFrameId];
+  if (activeFrame && activeFrame.complete && activeFrame.naturalWidth !== 0) {
+    ctx.drawImage(activeFrame, 0, 0, SIZE, SIZE);
   }
 }
 
@@ -266,12 +329,13 @@ download.addEventListener("click", () => {
   // Restore unclipped context for the frame overlay
   octx.restore();
 
-  // Draw frame on top
-  if (frame.complete && frame.naturalWidth !== 0) {
-    octx.drawImage(frame, 0, 0, size, size);
+  // Draw currently selected frame on top
+  const activeFrame = frames[currentFrameId];
+  if (activeFrame && activeFrame.complete && activeFrame.naturalWidth !== 0) {
+    octx.drawImage(activeFrame, 0, 0, size, size);
   }
 
-  const fileName = `uiu-career-fest-2026-dp-${size}.png`;
+  const fileName = `uiu-career-fest-2026-frame${currentFrameId}-${size}.png`;
 
   function triggerDownload(url) {
     const link = document.createElement("a");
@@ -317,6 +381,7 @@ download.addEventListener("click", () => {
 
 // Initial draw
 draw();
-if (frame.complete && frame.naturalWidth !== 0) {
+const initialFrame = frames[currentFrameId];
+if (initialFrame && initialFrame.complete && initialFrame.naturalWidth !== 0) {
   draw();
 }

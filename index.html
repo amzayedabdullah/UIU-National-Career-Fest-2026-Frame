@@ -31,6 +31,33 @@
       <canvas id="canvas" width="420" height="420"></canvas>
     </div>
 
+    <!-- Choose between 3 frames: Frame 1, Frame 2, Asset 6 -->
+    <div class="frame-selector-section">
+      <span class="control-label">Choose Frame Style</span>
+      <div class="frame-selector" id="frameSelector">
+        <button type="button" class="frame-choice active" data-frame="1" title="Frame 1">
+          <span class="frame-choice-preview">
+            <img src="thumb-1.png" id="thumb-img-1" alt="Frame 1" class="thumb-img">
+          </span>
+          <span class="frame-choice-name">Frame 1</span>
+        </button>
+
+        <button type="button" class="frame-choice" data-frame="2" title="Frame 2">
+          <span class="frame-choice-preview">
+            <img src="thumb-2.png" id="thumb-img-2" alt="Frame 2" class="thumb-img">
+          </span>
+          <span class="frame-choice-name">Frame 2</span>
+        </button>
+
+        <button type="button" class="frame-choice" data-frame="3" title="Frame 3 (Asset 6)">
+          <span class="frame-choice-preview">
+            <img src="thumb-3.png" id="thumb-img-3" alt="Frame 3" class="thumb-img">
+          </span>
+          <span class="frame-choice-name">Frame 3</span>
+        </button>
+      </div>
+    </div>
+
     <div class="controls">
       <span>Adjust Photo Zoom</span>
       <!-- Modern slider wrapper -->

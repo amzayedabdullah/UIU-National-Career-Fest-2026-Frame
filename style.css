@@ -133,6 +133,87 @@ canvas {
   cursor: grab;
 }
 
+/* -------- Frame Selector (3 Frames) -------- */
+.frame-selector-section {
+  margin-top: 18px;
+}
+
+.frame-selector-section .control-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.frame-selector {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.frame-choice {
+  background: #17171c;
+  border: 1.5px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 8px 6px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-muted);
+  transition: all 0.25s ease;
+  user-select: none;
+}
+
+.frame-choice:hover {
+  background: #22222a;
+  border-color: rgba(249, 115, 22, 0.4);
+  color: #ffffff;
+  transform: translateY(-2px);
+}
+
+.frame-choice.active {
+  background: linear-gradient(145deg, rgba(249, 115, 22, 0.18), rgba(234, 88, 12, 0.08));
+  border-color: var(--primary-orange);
+  color: #ffffff;
+  box-shadow: 0 0 16px rgba(249, 115, 22, 0.35);
+}
+
+.frame-choice-preview {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: #09090b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  transition: all 0.25s ease;
+}
+
+.frame-choice.active .frame-choice-preview {
+  border-color: var(--primary-orange);
+  box-shadow: 0 0 10px rgba(249, 115, 22, 0.4);
+}
+
+.thumb-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+}
+
+.frame-choice-name {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
 .controls {
   margin-top: 18px;
   font-size: 13px;
